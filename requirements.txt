@@ -1,0 +1,9 @@
+streamlit
+pandas
+numpy
+altair>=5.0
+plotly
+matplotlib
+seaborn
+scipy>=1.10
+ydata-profiling
