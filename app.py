@@ -238,7 +238,7 @@ st.sidebar.download_button("⬇️ Download filtered CSV", data.to_csv(index=Fal
 
 CONSTRUCTS = list(GROUPS)
 means = data[CONSTRUCTS].mean()
-agree_pct = {c: (items[[f"{c} Q{n}" for n in range(1, 6)]].stack() >= 4).mean() * 100
+agree_pct = {c: (items[[f"{c} Q{n}" for n in range(1, 6)]].stack().dropna() >= 4).mean() * 100
              for c in CONSTRUCTS}
 
 # ---------------------------------------------------------------- KPIs
@@ -252,7 +252,7 @@ st.write("")
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
     ["📈 Overview", "📊 Distributions", "🔗 Correlations", "🧩 Question level",
-     "🧪 Reliability", "🗂️ Data & Profile"])
+     "🧪 Reliability", "🗂️ Data"])
 
 # ---------------------------------------------------------------- TAB 1
 with tab1:
@@ -271,7 +271,7 @@ with tab1:
 
     long = []
     for c in CONSTRUCTS:
-        vals = items[[f"{c} Q{n}" for n in range(1, 6)]].stack().astype(int)
+        vals = items[[f"{c} Q{n}" for n in range(1, 6)]].stack().dropna().astype(int)
         cnt = vals.value_counts(normalize=True).reindex(range(1, 6), fill_value=0) * 100
         for lvl, p in zip(LIKERT_ORDER, cnt):
             long.append({"Construct": c, "Response": lvl, "Percent": p})
@@ -458,16 +458,5 @@ with tab6:
     st.dataframe(miss[miss["Missing"] > 0] if miss["Missing"].sum() else
                  pd.DataFrame({"Missing": ["None"]}), use_container_width=True)
 
-    if st.checkbox("Generate full data profiling report (slow, optional)"):
-        try:
-            from ydata_profiling import ProfileReport
-            import streamlit.components.v1 as components
-            with st.spinner("Building report..."):
-                rep = ProfileReport(data, minimal=True, title="Survey Profile")
-                components.html(rep.to_html(), height=800, scrolling=True)
-        except Exception as e:
-            st.error("ydata-profiling is not installed or not supported on this Python version. "
-                     "Run: pip install ydata-profiling")
-            st.caption(str(e))
-
-st.caption("Built with Streamlit, Altair, Plotly, Seaborn and Matplotlib.")
+st.caption("Built with Streamlit, Altair, Plotly, Seaborn and Matplotlib. "
+           "Proudly done by Chioma's Art 🦚🎭🎨")
