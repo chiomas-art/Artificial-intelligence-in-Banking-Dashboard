@@ -6,4 +6,3 @@ plotly
 matplotlib
 seaborn
 scipy>=1.10
-ydata-profiling
